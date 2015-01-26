@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#This Part of Project has been implemented from http://www.elevendroids.com/2013/03/barometric-pressure-sensor-bmp085-raspberry-python-and-things-in-the-works/
 
 from smbus import SMBus
 from time import sleep
@@ -19,10 +20,6 @@ def get_ushort(data, index):
 
 def bastemp():
     (chip_id, version) = bus.read_i2c_block_data(addr, 0xD0, 2)
-    #print "Chip Id:", chip_id, "Version:", version
-    
-    #print
-    #print "Reading calibration data..."
     # Read whole calibration EEPROM data
     cal = bus.read_i2c_block_data(addr, 0xAA, 22)
     
@@ -81,8 +78,3 @@ def bastemp():
     basinc = (p /100.0)*0.750061561303
     temp = t / 10.0
     return temp, basinc
-    #print
-    #print "Temperature:", temp, "C"
-    #print "Pressure:", basinc, "hPa"
-
-#print bastemp()
