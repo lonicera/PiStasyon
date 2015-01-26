@@ -29,16 +29,3 @@ def read_sensor(i):
   sensor_level = ReadChannel(i)
   sensor_volts = ConvertVolts(sensor_level,2)
   return float(sensor_volts)
-  # Read the temperature sensor data
-  #temp_level = ReadChannel(temp_channel)
-  #temp_volts = ConvertVolts(temp_level,2)
-  #temp       = ConvertTemp(temp_level,2)
- 
-  # Print out results
-      #print "--------------------------------------------"
-      #print i
-      #print("Light: {} ({}V) Kanal: ".format(light_level,light_volts))
-  #print("Temp : {} ({}V) {} deg C".format(temp_level,temp_volts,temp))
- 
-  # Wait before repeating loop
-  #time.sleep(delay)
