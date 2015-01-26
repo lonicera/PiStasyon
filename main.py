@@ -62,19 +62,13 @@ while True:
                 hk = read_sensor(3)
                 lght = read_sensor(4)
                 text_formatting("Veriler toplandı", 0, 'info')
-            except:
-                temp = 999
-                temp = 9999
-                hum = 9999
-                press = 9999
-                hk = 0
-                lght = 0
-                text_formatting("Veriler toplanamadı", 0, 'info')
+            except Exception, e:
+                text_formatting("Veriler toplanamadı. " + str(e) , 0, 'info')
                 pass 
-            #wsc = ws * 0.000666667
-            wsc = ws
-            #rgc = rg * 0.2794
-            rgc = rg
+            wsc = round(float(ws * 0.000666667),2)
+            #wsc = ws
+            rgc = round(float(rg * 0.2794),2)
+            #rgc = rg
             values.extend((datetime.datetime.now(),tempe, hum, press, rgc, wsc, hk, lght))
             values = values + wd
             try:
