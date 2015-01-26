@@ -10,7 +10,6 @@ from spi_sensor import read_sensor
 
    
 last_upt_wd = time.time()
-last_upt_ws = time.time()
 text_formatting("Uygulama çalıştırıldı", 0, 'info')
 values = []
 interval_wd = 5
@@ -54,11 +53,8 @@ while True:
     if ykilit and 2.1-time.time()%2.1 < 0.1:
         ykilit = False
     if 3600-time.time()%3600 < 0.2:                   
-    #if dakika == 0 and dtl == False:
-    #if time.time() >= last_upt_ws + interval_ws:
         text_formatting("Veri girme saati", 0, 'info')
         last_upt_ws = time.time()
-        #dtl = True
         try: # collect data from sensors
             try:
                 tempe, hum = humtemp()
@@ -84,7 +80,6 @@ while True:
             try:
                 if internet_on() and not offline:
                     text_formatting("İnternet var ve sistem çevrimiçi", 0, 'info')
-                    #mysqlin(values)
                     gwrite(values)
                     text_formatting("Veriler gdoca yazıldı", 0, 'info')
                 elif internet_on() and offline:
@@ -106,9 +101,5 @@ while True:
         except:
             text_formatting("Veriler tüm sensörlerden toplanamadı", 0, 'error')
             pass
-    #if 3600-time.time()%3600 > 0.1:
-    #if dakika != 0 and dtl:
-    #    text_formatting("Kilitlendi", 1, 'info')   
-    #    dtl = False  
     time.sleep(0.1)
    
