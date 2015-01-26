@@ -1,0 +1,110 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+import logging, os, datetime, urllib2, gspread
+
+log_file = 'aero.log'
+def text_formatting(source,level, log_level):
+    if not os.path.isfile(log_file):
+        logging.basicConfig(filename=log_file, format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
+        text_formatting("Günlük dosyası oluşturuldu", 0, 'info')
+    elif float(os.path.getsize(log_file))/(1024*1024) > 0.5:
+       os.rename(log_file, str(log_file[:-4]) + "_ydk_" + str(datetime.datetime.now().date()) + ".log")
+       logging.basicConfig(filename=log_file, format='%(asctime)s:%(levelname)s:%(message)s',  datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
+       text_formatting("Log dosyası yedeklendi", 0, 'info')
+    logging.basicConfig(filename=log_file, format='%(asctime)s:%(levelname)s:%(message)s',  datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
+    tab_space = "   "
+    for i in range(level):
+        source = tab_space + source
+    if log_level == "info":
+        logging.info(source)   
+    elif log_level == "warning":
+        logging.warning(source)
+    elif log_level == "debug":
+        logging.debug(source)
+    elif log_level == "error":
+        logging.error(source)    
+    print(source)
+
+def internet_on():
+    try:
+        response=urllib2.urlopen('http://www.google.com.tr',timeout=1)
+        return True
+    #except urllib2.URLError as err: pass
+    except:
+        #app = Flask(__name__)
+        #app.run(host="0.0.0.0", use_reloader=False)
+        pass
+        return False
+
+
+def login_open_sheet(email, password, spreadsheet):
+	"""Connect to Google Docs spreadsheet and return the first worksheet."""
+	try:
+		gc = gspread.login(email, password)
+		worksheet = gc.open(spreadsheet).sheet1
+		return worksheet
+	except:
+		#print 'Unable to login and get spreadsheet.  Check email, password, spreadsheet name.'
+                text_formatting("Veritabanı dosyasına ulaşılamadı", 1, 'error')
+                pass
+		#sys.exit(1)
+
+worksheet_temp = []
+offline = False
+
+def gwrite(values):
+    global offline
+    global worksheet_temp
+    worksheet = None
+    GDOCS_EMAIL            = 'palynology@gmail.com'
+    GDOCS_PASSWORD         = 'haticem-000-'
+    GDOCS_SPREADSHEET_NAME = 'AeroMet'
+    if worksheet is None:
+        try:
+            worksheet = login_open_sheet(GDOCS_EMAIL, GDOCS_PASSWORD, GDOCS_SPREADSHEET_NAME)
+            if int(worksheet.row_count) > 50000:
+                worksheet.resize(1,3)
+        except:
+            offline = True
+            worksheet = False
+            text_formatting("Çevrimdışı çalışıyor", 1, 'info')
+            pass
+            #worksheet_temp = []
+    if offline and internet_on():
+        offline = False
+        text_formatting("İnternet bağlantısı algılandı.", 1, 'info')
+        try:
+            worksheet = login_open_sheet(GDOCS_EMAIL, GDOCS_PASSWORD, GDOCS_SPREADSHEET_NAME)
+            try:
+                text_formatting("Eski veriler ekleniyor", 1, 'info')
+                for i in worksheet_temp:
+                    worksheet.append_row(i)
+                    text_formatting(i, 1, 'info')
+                    time.sleep(0.5)
+                worksheet_temp = []
+            except:
+                print "olmadı"
+                pass          
+            if int(worksheet.row_count) > 50000:
+                worksheet.resize(1,3)
+        except:
+            offline = True
+            worksheet = False
+            #worksheet_temp = []
+    try:
+        if not offline:    
+            worksheet.append_row(values)
+            # Wait 30 seconds before continuing
+            #print 'Wrote a row to {0}'.format(GDOCS_SPREADSHEET_NAME)
+            #time.sleep(FREQUENCY_SECONDS)
+        else:
+            text_formatting("Veriler geçici bellekte", 1, 'info')
+            worksheet_temp.append([values])
+    except:
+        # Error appending data, most likely because credentials are stale.
+        # Null out the worksheet so a login is performed at the top of the loop.
+        #print 'Append error, logging in again'
+        text_formatting("Veritabanına yeni satır eklenemedi", 1, 'error')
+        #worksheet = None
+        pass
+
