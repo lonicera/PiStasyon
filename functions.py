@@ -13,8 +13,8 @@ def send_mail(subject):
     #toaddrs  = 'mustafa.halim.demirci@gmail.com'
     toaddrs  = 'palynology@gmail.com'
     msg = MIMEMultipart()
-    username = 'palynology'
-    password = 'haticem-000-'
+    username = ''
+    password = ''
     server = smtplib.SMTP('smtp.gmail.com:587')
     server.starttls()
     server.login(username,password)
@@ -55,8 +55,8 @@ def mysqlin(values):
     global offline
     #try:
     mysqldb = MySQLdb.connect(host= "php.beun.edu.tr",
-                  user="aeroalerjen",
-                  passwd="ca0RUvDe",
+                  user="",
+                  passwd="",
                   db="aeroalerjen")
         #tarih = datetime.now()
         #conn = sqlite3.connect('veri.db')
