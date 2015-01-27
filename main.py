@@ -19,7 +19,7 @@ wd = [0,0,0,0,0,0,0,0]
 ws = 0
 rg = 0
 hk = 0
-lght = 0
+light = 0
 dtl = False
 offline = False
 send_mail(get_interface_ip('eth0'))
@@ -60,7 +60,7 @@ while True:
                 tempe, hum = humtemp()
                 temp, press = bastemp()
                 hk = read_sensor(3)
-                lght = read_sensor(4)
+                light = read_sensor(4)
                 text_formatting("Veriler toplandı", 0, 'info')
             except Exception, e:
                 text_formatting("Veriler toplanamadı. " + str(e) , 0, 'info')
@@ -69,7 +69,7 @@ while True:
             #wsc = ws
             rgc = round(float(rg * 0.2794),2)
             #rgc = rg
-            values.extend((datetime.datetime.now(),tempe, hum, press, rgc, wsc, hk, lght))
+            values.extend((datetime.datetime.now(),tempe, hum, press, rgc, wsc, hk, light))
             values = values + wd
             try:
                 if internet_on() and not offline:
