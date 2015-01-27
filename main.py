@@ -20,7 +20,6 @@ ws = 0
 rg = 0
 hk = 0
 light = 0
-dtl = False
 offline = False
 send_mail(get_interface_ip('eth0'))
 ykilit = False
