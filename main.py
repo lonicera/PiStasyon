@@ -25,8 +25,6 @@ offline = False
 send_mail(get_interface_ip('eth0'))
 ykilit = False
 while True:
-    zaman = datetime.datetime.now().time()
-    dakika = int(str(zaman)[3:-10])
     if time.time() >= last_upt_wd + interval_wd:
        last_upt_wd = time.time()
        if read_sensor(0) >= 0.61 and read_sensor(0) <= 0.63:
