@@ -61,9 +61,9 @@ while True:
             except Exception, e:
                 text_formatting("Veriler toplanamadı. " + str(e) , 0, 'info')
                 pass 
-            wsc = round(float(ws * 0.000666667),2)
+            wsc = ws * 0.000666667 
             #wsc = ws
-            rgc = round(float(rg * 0.2794),2)
+            rgc = rg * 0.2794
             #rgc = rg
             values.extend((time.time(),tempe, hum, press, rgc, wsc, hk, light))
             values = values + wd
