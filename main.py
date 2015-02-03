@@ -13,7 +13,6 @@ last_upt_wd = time.time()
 text_formatting("Uygulama çalıştırıldı", 0, 'info')
 values = []
 interval_wd = 5
-interval_ws = 90
 interval_rg = 0.1
 wd = [0,0,0,0,0,0,0,0]
 ws = 0
