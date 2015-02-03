@@ -66,7 +66,7 @@ while True:
             #wsc = ws
             rgc = round(float(rg * 0.2794),2)
             #rgc = rg
-            values.extend((datetime.datetime.now(),tempe, hum, press, rgc, wsc, hk, light))
+            values.extend((time.time(),tempe, hum, press, rgc, wsc, hk, light))
             values = values + wd
             try:
                 if internet_on() and not offline:
