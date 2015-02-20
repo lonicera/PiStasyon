@@ -1,95 +1,58 @@
+  GNU nano 2.2.6                          File: amet/main.py                                                          
+
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import sys
-sys.dont_write_bytecode = True
-import datetime, time, logging, os
+import serial, time, urllib2, sys
 from functions import text_formatting, gwrite, sqlin, sqltogsp, internet_on, send_mail, get_interface_ip, mysqlin
+import datetime, time, logging, os
 from dht22 import humtemp
 from baro import bastemp
 from spi_sensor import read_sensor
-
-   
-last_upt_wd = time.time()
+from twit import send_main
+sys.dont_write_bytecode = True
+ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
+ygmr = 0
+wd = [0,0,0,0,0,0,0,0]
+counter = 0
+rtop = 0
+ytop = 0
+rhizih = 0
+last_up = time.time()
 text_formatting("Uygulama çalıştırıldı", 0, 'info')
 values = []
-interval_wd = 5
-interval_rg = 0.1
-wd = [0,0,0,0,0,0,0,0]
-ws = 0
-rg = 0
-hk = 0
-light = 0
 offline = False
-send_mail(get_interface_ip('eth0'))
-ykilit = False
+interval = 90
+def get_direction (ryonu):
+    if "NW" in ryonu:
+        wd[1] = int(wd[1]) + 1
+    elif "NE" in ryonu:
+        wd[7] = int(wd[7]) + 1
+    elif "N" in ryonu:
+        wd[0] = int(wd[0]) + 1
+    elif "SW" in ryonu:
+        wd[3] = int(wd[3]) + 1
+    elif "SE" in ryonu:
+        wd[5] = int(wd[5]) + 1
+    elif "S" in ryonu:
+        wd[4] = int(wd[4]) + 1
+    elif "W" in ryonu:
+        wd[2] = int(wd[2]) + 1
+    elif "E" in ryonu:
+        wd[6] = int(wd[6]) + 1
+
 while True:
-    if time.time() >= last_upt_wd + interval_wd:
-       last_upt_wd = time.time()
-       if read_sensor(0) >= 0.61 and read_sensor(0) <= 0.63:
-           wd[0] = int(wd[0]) + 1
-       elif read_sensor(0) >= 0.68 and read_sensor(0) <= 0.72:
-           wd[1] = int(wd[1]) + 1
-       elif read_sensor(0) >= 0.73 and read_sensor(0) <= 0.77:
-           wd[2] = int(wd[2]) + 1
-       elif read_sensor(0) >= 0.48 and read_sensor(0) <= 0.53:
-           wd[3] = int(wd[3]) + 1
-       elif read_sensor(0) >= 0.21 and read_sensor(0) <= 0.25:
-           wd[4] = int(wd[4]) + 1
-       elif read_sensor(0) >= 0.13 and read_sensor(0) <= 0.17:
-           wd[5] = int(wd[5]) + 1
-       elif read_sensor(0) >= 0.06 and read_sensor(0) <= 0.10:
-           wd[6] = int(wd[6]) + 1
-       elif read_sensor(0) >= 0.34 and read_sensor(0) <= 0.39:
-           wd[7] = int(wd[7]) + 1
-    if read_sensor(7) > 0.2:
-        ws = ws + 1 
-    if read_sensor(6) < 0.4  and not ykilit:
-        rg = rg + 1
-        ykilit = True
-    if ykilit and 2.1-time.time()%2.1 < 0.1:
-        ykilit = False
-    if 3600-time.time()%3600 < 0.2:                   
-        text_formatting("Veri girme saati", 0, 'info')
-        last_upt_ws = time.time()
-        try: # collect data from sensors
-            try:
-                tempe, hum = humtemp()
-                temp, press = bastemp()
-                hk = read_sensor(3)
-                light = read_sensor(4)
-                text_formatting("Veriler toplandı", 0, 'info')
-            except Exception, e:
-                text_formatting("Veriler toplanamadı. " + str(e) , 0, 'info')
-                pass 
-            wsc = ws * 0.000666667 
-            #wsc = ws
-            rgc = rg * 0.2794
-            #rgc = rg
-            values.extend((time.time(),tempe, hum, press, rgc, wsc, hk, light))
-            values = values + wd
-            try:
-                if internet_on() and not offline:
-                    text_formatting("İnternet var ve sistem çevrimiçi", 0, 'info')
-                    gwrite(values)
-                    text_formatting("Veriler gdoca yazıldı", 0, 'info')
-                elif internet_on() and offline:
-                    text_formatting("İnternet algılandı ve eski veriler yazılacak", 0, 'info')
-                    sqlin(values)
-                    sqltogsp()
-                    offline = False
-                else:
-                    text_formatting("İnternet yok, çevrim dışı", 0, 'info')
-                    offline = True
-                    sqlin(values)   
-            except:
-                text_formatting("Veriler kaydedilemedi", 0, 'error')
-                pass
-            ws = 0
-            rg = 0
-            wd = [0,0,0,0,0,0,0,0]
-            values = []
-        except:
-            text_formatting("Veriler tüm sensörlerden toplanamadı", 0, 'error')
-            pass
-    time.sleep(0.1)
-   
+    zaman = datetime.datetime.now().time()
+    dakika = int(str(zaman)[3:-10])
+    saat = int(str(zaman)[:-13])
+    cur_time = time.time()
+    veri = ser.readline().rstrip('\n')
+    if "Wind" in veri:
+        counter = counter + 1
+        rhizi = float(veri.split()[2]) / 10
+        ryonu = veri.split()[5]
+        rtop = rtop + float(rhizi)
+        hk = read_sensor(3)
+        lght = read_sensor(4)
+                                                  [ Read 97 lines ]
+^G Yardım Al       ^O Yaz             ^R Dosya Oku       ^Y Önceki Sayfa    ^K Metni Kes       ^C İmleç Pozisyonu
+^X Çık             ^J Yasla           ^W Ara             ^V Sonraki Sayfa   ^U UnCut Text      ^T Denetime
