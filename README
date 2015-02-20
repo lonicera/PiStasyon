@@ -1,2 +1,4 @@
 # PiStasyon
 Another Raspberry Pi based Wheather Station
+
+In Pistasyon project, The way of collecting data from some sensor has been changed, since I have some trouble with MCP3208 ADC. Wind Direction and speed and rain datas are collected via Android Nano using Serial connection between Raspberry Pi and Arduino. 
