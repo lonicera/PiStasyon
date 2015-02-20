@@ -1,5 +1,3 @@
-  GNU nano 2.2.6                          File: amet/main.py                                                          
-
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import serial, time, urllib2, sys
@@ -53,6 +51,46 @@ while True:
         rtop = rtop + float(rhizi)
         hk = read_sensor(3)
         lght = read_sensor(4)
-                                                  [ Read 97 lines ]
-^G Yardım Al       ^O Yaz             ^R Dosya Oku       ^Y Önceki Sayfa    ^K Metni Kes       ^C İmleç Pozisyonu
-^X Çık             ^J Yasla           ^W Ara             ^V Sonraki Sayfa   ^U UnCut Text      ^T Denetime
+        harray = []
+        get_direction(ryonu)
+    if "Rain" in veri:
+        ygmr = veri.split()[2]
+        ytop = ytop + float(ygmr)
+    #if round(time.time()%120,1) == 120:
+    if cur_time - last_up > interval and dakika == 0:
+        #print "burada"
+        tempe, hum = humtemp()
+        temp, press = bastemp()
+        last_up = cur_time
+        if rtop > 0:
+            rhizih = rtop / counter
+        else:
+            rhizih = 0
+        values.extend((time.time(), datetime.datetime.now(),temp, hum, press, ytop, rhizih, hk, lght))
+        values = values + wd
+        try:
+            if internet_on() and not offline:
+                text_formatting("İnternet var ve sistem çevrimiçi", 0, 'info')
+                gwrite(values)
+                text_formatting("Veriler gdoca yazıldı", 0, 'info')
+                #Tweet atalım bakalım
+                if ytop > 5 and saat == 8:
+                    send_main("Bu sabaaah yağmur var Zonguldak'ta. Yağış miktarı: " + str("ytop") + " mm" )
+            elif internet_on() and offline:
+                text_formatting("İnternet algılandı ve eski veriler yazılacak", 0, 'info')
+                sqlin(values)
+                sqltogsp()
+                offline = False
+            else:
+                text_formatting("İnternet yok, çevrim dışı", 0, 'info')
+                offline = True
+                sqlin(values)   
+        except Exception, e:
+            text_formatting("Veriler kaydedilemedi ," + str(e), 0, 'error')
+            pass
+        counter = 0
+        ytop = 0
+        rtop = 0
+        wd = [0,0,0,0,0,0,0,0]
+        values = []
+    time.sleep(0.1)
