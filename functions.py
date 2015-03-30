@@ -95,8 +95,8 @@ def gwrite(values):
     global offline
     global worksheet_temp
     worksheet = None
-    GDOCS_EMAIL            = 'palynology@gmail.com'
-    GDOCS_PASSWORD         = 'haticem-000-'
+    GDOCS_EMAIL            = ''
+    GDOCS_PASSWORD         = ''
     GDOCS_SPREADSHEET_NAME = 'AeroMet'
     if worksheet is None:
         try:
